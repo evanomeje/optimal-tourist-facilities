@@ -1,5 +1,6 @@
 #include <vector>
 
+
 // Basic structure to store locations
 struct Location {
     double x;
