@@ -20,12 +20,25 @@ double calculateDistance(const Location& a, const Location& b) {
     return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
 }
 
+// Function to label locations based on coordinates (for demonstration)
+std::string labelLocation(double x, double y) {
+    if (x < 25 && y < 25) {
+        return "Entrance";
+    } else if (x < 50 && y < 50) {
+        return "Restaurant";
+    } else if (x < 75 && y < 75) {
+        return "Pool";
+    } else {
+        return "Beach";
+    }
+}
+
 // BathroomOptimizer class to determine optimal bathroom placements
 class BathroomOptimizer {
 private:
     std::vector<Location> hotspots;       // High traffic areas
     std::vector<Location> bathrooms;      // Existing bathrooms
-    double minDistance;                    // Minimum distance between bathrooms
+    double minDistance;                   // Minimum distance between bathrooms
 
     // Greedy algorithm for bathroom placement
     std::vector<Location> greedyPlacement(int numToilets, double maxDistance) {
@@ -123,7 +136,7 @@ private:
                 Location newCenter;
                 newCenter.x = sumX / clusters[c].size();
                 newCenter.y = sumY / clusters[c].size();
-                newCenter.traffic = sumTraffic;  // Not used in distance calculation
+                newCenter.traffic = sumTraffic;  // Traffic sum not directly used for distance, but stored
 
                 // Check for convergence
                 if (calculateDistance(newCenter, centers[c]) > 1e-3) {
@@ -218,7 +231,6 @@ void saveToCSV(const std::string& filename, const std::vector<Location>& bathroo
     outFile.close();
 }
 
-// Main function
 int main() {
     srand(static_cast<unsigned>(time(0)));
 
@@ -236,6 +248,20 @@ int main() {
 
     // Generate random hotspots
     std::vector<Location> hotspots = generateRandomHotspots(numHotspots, areaSize, areaSize, maxTraffic);
+
+    // Print initial map view
+    std::cout << "=== Initial Map View ===\n";
+    std::cout << "Existing Bathrooms:\n";
+    for (const auto& bathroom : existingBathrooms) {
+        std::cout << "(" << bathroom.x << ", " << bathroom.y << ") with traffic: " << bathroom.traffic 
+                  << " (Near: " << labelLocation(bathroom.x, bathroom.y) << ")\n";
+    }
+    std::cout << "\nHotspots:\n";
+    for (const auto& hotspot : hotspots) {
+        std::cout << "(" << hotspot.x << ", " << hotspot.y << ") with traffic: " << hotspot.traffic 
+                  << " (Near: " << labelLocation(hotspot.x, hotspot.y) << ")\n";
+    }
+    std::cout << "\n";
 
     // Initialize BathroomOptimizer
     BathroomOptimizer optimizer(hotspots);
@@ -262,7 +288,8 @@ int main() {
     std::cout << "=== Greedy Algorithm ===\n";
     std::cout << "Suggested locations for new bathrooms:\n";
     for (const auto& bathroom : greedyBathrooms) {
-        std::cout << "(" << bathroom.x << ", " << bathroom.y << ") with traffic: " << bathroom.traffic << "\n";
+        std::cout << "(" << bathroom.x << ", " << bathroom.y << ") with traffic: " << bathroom.traffic
+                  << " (Near: " << labelLocation(bathroom.x, bathroom.y) << ")\n";
     }
     std::cout << "Coverage: " << greedyCoverage << "%\n";
     std::cout << "Execution Time: " << elapsedGreedy.count() << " seconds.\n\n";
@@ -270,7 +297,8 @@ int main() {
     std::cout << "=== K-Means Clustering Algorithm ===\n";
     std::cout << "Suggested locations for new bathrooms:\n";
     for (const auto& bathroom : kMeansBathrooms) {
-        std::cout << "(" << bathroom.x << ", " << bathroom.y << ") with traffic: " << bathroom.traffic << "\n";
+        std::cout << "(" << bathroom.x << ", " << bathroom.y << ") with traffic: " << bathroom.traffic
+                  << " (Near: " << labelLocation(bathroom.x, bathroom.y) << ")\n";
     }
     std::cout << "Coverage: " << kMeansCoverage << "%\n";
     std::cout << "Execution Time: " << elapsedKMeans.count() << " seconds.\n\n";
