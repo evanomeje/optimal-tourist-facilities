@@ -1,0 +1,21 @@
+# Makefile for Bathroom Optimizer
+
+# Compiler
+CXX = g++
+
+# Compiler flags
+CXXFLAGS = -std=c++11 -Wall -O2
+
+# Target executable name
+TARGET = bathroom_optimizer
+
+# Source file
+SRC = main.cc
+
+# Default build target
+all: $(TARGET)
+
+# Build the target
+$(TARGET): $(SRC)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRC)
+	
